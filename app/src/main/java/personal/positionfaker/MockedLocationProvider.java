@@ -1,19 +1,18 @@
 package personal.positionfaker;
 
+/**
+ * Created by Nanochrome on 17-Jul-16.
+ */
+
 import android.content.Context;
 import android.location.Location;
 import android.os.Handler;
 import android.os.Message;
-
-
 import com.google.android.gms.maps.model.LatLng;
-
 import java.util.Timer;
 import java.util.TimerTask;
 
-/**
- * Created by Nanochrome on 17-Jul-16.
- */
+
 public class MockedLocationProvider {
 
     private Context mContext;
