@@ -6,10 +6,10 @@ android {
 
     defaultConfig {
         applicationId "personal.positionfaker"
-        minSdkVersion 22
+        minSdkVersion 21
         targetSdkVersion 23
         versionCode 1
-        versionName "1.0"
+        versionName "Pokemon GO Location Spoofer V 1.0"
     }
     buildTypes {
         release {

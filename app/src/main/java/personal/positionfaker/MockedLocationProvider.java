@@ -6,8 +6,16 @@ package personal.positionfaker;
 
 import android.content.Context;
 import android.location.Location;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.util.Log;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -23,6 +31,7 @@ public class MockedLocationProvider {
     private Location goal;
     private boolean isMoving;
     private LocationFaker locationFaker;
+
 
     private final Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {
