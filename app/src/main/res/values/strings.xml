@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">PositionFaker</string>
+    <string name="app_name">Pokemon Location Spoofer</string>
     <string name="title_activity_location_picker">LocationPicker</string>
 </resources>
