@@ -12,6 +12,12 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
+
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -37,6 +43,8 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
 
+    private ImageButton pokemonPosition;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +52,8 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_location_picker);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        pokemonPosition = (ImageButton) findViewById(R.id.pokemonLocation);
 
         sharedPreferences = getSharedPreferences("pokemon", Context.MODE_WORLD_WRITEABLE|Context.MODE_WORLD_READABLE);
         editor = sharedPreferences.edit();
@@ -68,6 +78,18 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
                 .position(new LatLng(mLatitude,mLongtitude));
         endPostionAtMap = mMap.addMarker(endPositionMarker);
         endPostionAtMap.setVisible(false);
+
+        pokemonPosition.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("TAG", "" + mMap.getCameraPosition().zoom);
+                if (mMap.getCameraPosition().zoom < 15) {
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLatitude, mLongtitude), 15));
+                } else {
+                    mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mLatitude, mLongtitude)));
+                }
+            }
+        });
 
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override

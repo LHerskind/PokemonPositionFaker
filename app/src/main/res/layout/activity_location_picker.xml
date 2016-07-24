@@ -5,4 +5,19 @@
     android:name="com.google.android.gms.maps.SupportMapFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LocationFaker" />
+    tools:context=".LocationFaker">
+
+
+        <ImageButton
+            android:id="@+id/pokemonLocation"
+            android:layout_margin="12dp"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:padding="5dp"
+            android:background="@drawable/background_image"
+            android:src="@drawable/pokeball_icon"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:clickable="true" />
+
+</fragment>
