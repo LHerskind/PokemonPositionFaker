@@ -21,18 +21,38 @@
             android:scaleType="fitCenter"
             android:clickable="true" />
 
-        <ImageButton
-            android:id="@+id/teleportLocation"
-            android:layout_margin="12dp"
-            android:layout_width="38dp"
-            android:layout_height="38dp"
-            android:padding="5dp"
+        <LinearLayout
             android:layout_gravity="bottom|right"
-            android:background="@drawable/background_image"
-            android:src="@drawable/rocket_icon"
-            android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            android:clickable="true" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_margin="12dp">
+
+                <ImageButton
+                    android:id="@+id/coordinatsLocation"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:padding="5dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/background_image"
+                    android:src="@drawable/marker_on_map"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    android:clickable="true" />
+
+                <ImageButton
+                    android:id="@+id/teleportLocation"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:padding="5dp"
+                    android:background="@drawable/background_image"
+                    android:src="@drawable/rocket_icon"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    android:clickable="true" />
+
+
+        </LinearLayout>
 
 
 </fragment>
