@@ -79,15 +79,12 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
         editor = sharedPreferences.edit();
         mMockedLocationProvider = new MockedLocationProvider(this, mContext, providerName);
 
-        // ATTENTION: This "addApi(AppIndex.API)"was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
         googleApiClient = new GoogleApiClient.Builder(mContext)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .addApi(AppIndex.API).build();
     }
-
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -132,13 +129,10 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
             @TargetApi(Build.VERSION_CODES.M)
             @Override
             public void onClick(View v) {
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(LocationFaker.this);
                 builder.setTitle("Input destination");
-
                 LinearLayout linearLayout = new LinearLayout(mContext);
                 linearLayout.setOrientation(LinearLayout.VERTICAL);
-
                 final EditText inputLatitude = new EditText(mContext);
                 final EditText inputLongtitude = new EditText(mContext);
                 inputLatitude.setHint("Latitude");
@@ -150,7 +144,6 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
                 linearLayout.addView(inputLatitude);
                 linearLayout.addView(inputLongtitude);
                 builder.setView(linearLayout);
-
                 builder.setPositiveButton("GO!", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -172,7 +165,6 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
                 builder.show();
             }
         });
-
 
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
@@ -231,7 +223,6 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
     @Override
     public void onStop() {
         super.onStop();
-        googleApiClient.disconnect();
     }
 
     @Override
@@ -247,14 +238,11 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
 
     @Override
     public void onConnectionSuspended(int i) {
-
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
     }
-
 
 
 }
