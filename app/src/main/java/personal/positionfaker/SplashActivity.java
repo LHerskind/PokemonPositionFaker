@@ -13,14 +13,16 @@ import android.util.Log;
  */
 public class SplashActivity extends Activity {
 
-    private final int MY_PERMISSIONS_REQUEST_LOCATION = 1;
+    private final int MY_PERMISSIONS_REQUEST_LOCATION = 404;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         permissions();
+    }
 
+    public void goToApp() {
         Intent intent = new Intent(this, LocationFaker.class);
         startActivity(intent);
         finish();
@@ -29,6 +31,8 @@ public class SplashActivity extends Activity {
     public void permissions() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION}, MY_PERMISSIONS_REQUEST_LOCATION);
+        } else {
+            goToApp();
         }
     }
 
@@ -39,8 +43,10 @@ public class SplashActivity extends Activity {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 } else {
                 }
+                goToApp();
                 return;
             }
         }
     }
+
 }

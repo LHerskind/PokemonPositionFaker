@@ -21,6 +21,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.text.InputType;
 import android.view.View;
 import android.widget.EditText;
@@ -85,6 +86,7 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
                 .addApi(LocationServices.API)
                 .addApi(AppIndex.API).build();
     }
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
