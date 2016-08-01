@@ -71,8 +71,11 @@ public class Faker implements IXposedHookLoadPackage {
     private void gotoPlace() {
         if (mLocation == null || mThisObject == null || mWhateverArray == null) return;
         mSharedPreferences.reload();
-        mLatitude = Double.parseDouble(mSharedPreferences.getString("latitude", "55.675989"));
-        mLongitude = Double.parseDouble(mSharedPreferences.getString("longtitude", "12.568932"));
+        mLatitude = Double.parseDouble(mSharedPreferences.getString("latitude", "420"));
+        mLongitude = Double.parseDouble(mSharedPreferences.getString("longtitude", "420"));
+        if (mLatitude == 420 || mLongitude == 420) {
+            return;
+        }
         mLocation.setLatitude(mLatitude);
         mLocation.setLongitude(mLongitude);
         XposedHelpers.callMethod(mThisObject, "nativeLocationUpdate", mLocation, mWhateverArray, mContext);

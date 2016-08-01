@@ -52,8 +52,8 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
     private Marker myPositionAtMap;
     private Marker endPostionAtMap;
 
-    private double mLatitude = 55.675989;
-    private double mLongtitude = 12.568932;
+    private double mLatitude = 0;
+    private double mLongtitude = 0;
 
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
@@ -139,8 +139,8 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
                 final EditText inputLongtitude = new EditText(mContext);
                 inputLatitude.setHint("Latitude");
                 inputLongtitude.setHint("Longtitude");
-                inputLatitude.setHintTextColor(getColor(R.color.darkText));
-                inputLongtitude.setHintTextColor(getColor(R.color.darkText));
+                inputLatitude.setHintTextColor(getResources().getColor(R.color.darkText));
+                inputLongtitude.setHintTextColor(getResources().getColor(R.color.darkText));
                 inputLatitude.setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                 inputLongtitude.setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                 linearLayout.addView(inputLatitude);
