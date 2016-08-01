@@ -79,7 +79,7 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
         sharedPreferences = getSharedPreferences("pokemon", Context.MODE_WORLD_WRITEABLE | Context.MODE_WORLD_READABLE);
         editor = sharedPreferences.edit();
         mMockedLocationProvider = new MockedLocationProvider(this, mContext, providerName);
-
+        
         googleApiClient = new GoogleApiClient.Builder(mContext)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)

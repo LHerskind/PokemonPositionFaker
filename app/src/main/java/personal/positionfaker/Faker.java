@@ -7,6 +7,7 @@ package personal.positionfaker;
 
 import android.content.Context;
 import android.location.Location;
+import android.util.Log;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -15,6 +16,7 @@ import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XSharedPreferences;
+import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import static de.robv.android.xposed.XposedHelpers.findAndHookConstructor;
@@ -59,6 +61,7 @@ public class Faker implements IXposedHookLoadPackage {
                     mLocation = location;
                     mThisObject = param.thisObject;
                     mWhateverArray = (int[]) param.args[1];
+                    gotoPlace();
                 }
                 return null;
             }
