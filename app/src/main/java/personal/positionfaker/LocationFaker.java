@@ -73,7 +73,6 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
     private ImageButton onOffButton;
     private ImageButton speedButton;
 
-    private boolean isRoute = false;
     private Polyline line;
     private ArrayList<LatLng> route = new ArrayList<LatLng>();
 
@@ -108,6 +107,7 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
 //        editor.clear();
         if (sharedPreferences.getAll().isEmpty()) {
             editor.putBoolean("moduleOn", false);
+            editor.putBoolean("isRoute", false);
             editor.putInt("speed", 10);
             editor.apply();
         }
@@ -154,7 +154,7 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
             public void onClick(View v) {
                 setMyLocation(endPositionMarker.getPosition().latitude, endPositionMarker.getPosition().longitude);
                 updateMyLocation();
-                if (isRoute) {
+                if (getIsRoute()) {
                     route.clear();
                     line.setPoints(route);
                     route.add(getMyLocation());
@@ -264,21 +264,30 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
             }
         });
 
+
+        line = mMap.addPolyline(new PolylineOptions()
+                .width(10)
+                .color(getResources().getColor(R.color.colorPrimary)));
+
+        if (sharedPreferences.getBoolean("isRoute", false)) {
+            directionOrRoute.setImageResource(R.drawable.route);
+            isMoving = false;
+        } else {
+            directionOrRoute.setImageResource(R.drawable.direction);
+        }
+
         directionOrRoute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                isRoute = (!isRoute);
-                if (isRoute) {
+                editor.putBoolean("isRoute", (!getIsRoute()));
+                editor.apply();
+                if (getIsRoute()) {
                     directionOrRoute.setImageResource(R.drawable.route);
-                    route.add(getMyLocation());
-                    line = mMap.addPolyline(new PolylineOptions()
-                            .width(10)
-                            .color(getResources().getColor(R.color.colorPrimary)));
                     isMoving = false;
                 } else {
                     directionOrRoute.setImageResource(R.drawable.direction);
                     route.clear();
-                    line.remove();
+                    line.setPoints(route);
                 }
                 endPostionAtMap.setVisible(false);
                 mMockedLocationProvider.stopTimer();
@@ -295,6 +304,7 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
                     boolean newBool = (!module_on);
                     editor.putBoolean("moduleOn", newBool);
                     editor.apply();
+//                    Log.i("TAG ", "Vi skifter moduleOn til "+ newBool);
                     setOnOffButtonImage(!module_on);
                 } catch (Exception e) {
                     Toast.makeText(mContext, "Error", Toast.LENGTH_SHORT).show();
@@ -324,19 +334,20 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
         endPositionMarker.position(latLng);
         endPostionAtMap.setPosition(endPositionMarker.getPosition());
         endPostionAtMap.setVisible(true);
-        if (isRoute) {
+        if (getIsRoute()) {
             setRoutePartGoalLocation(latLng);
         } else {
             mMockedLocationProvider.moveToLocation(latLng.latitude, latLng.longitude);
         }
     }
 
-    private boolean isMoving;
+    private boolean isMoving = false;
 
     public void setRoutePartGoalLocation(LatLng latLng) {
         route.add(latLng);
         line.setPoints(route);
         if (!isMoving) {
+            route.add(0, getMyLocation());
             indexOnRoute = 1;
             mMockedLocationProvider.moveToLocation(route.get(1).latitude, route.get(1).longitude);
             isMoving = true;
@@ -346,7 +357,7 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
     private int indexOnRoute;
 
     public boolean getIsRoute() {
-        return isRoute;
+        return sharedPreferences.getBoolean("isRoute", false);
     }
 
     public boolean sendMeToNextRoutePoint() {
@@ -397,10 +408,11 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
         editor.putString("longtitude", "" + mLongtitude);
         editor.apply();
         upDatePolyLine();
+//        Log.i("TAG", "setMyLocation");
     }
 
     public void upDatePolyLine() {
-        if (isRoute) {
+        if (getIsRoute()) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

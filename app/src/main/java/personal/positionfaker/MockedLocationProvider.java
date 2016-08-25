@@ -5,10 +5,10 @@ package personal.positionfaker;
  */
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -20,7 +20,7 @@ public class MockedLocationProvider {
 
     private Context mContext;
     private String providerName;
-    private final int updateTime = 500;
+    private final int updateTime = 250;
     private final double factor = ((double) updateTime) / 3600;
     private double speed = 10 * factor;
     private Location goal;
@@ -91,7 +91,6 @@ public class MockedLocationProvider {
                 }
             }, 0, updateTime);
         }
-
     }
 
     public void moveStep(double addLat, double addLon) {

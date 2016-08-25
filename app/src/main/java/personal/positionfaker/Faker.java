@@ -31,6 +31,8 @@ public class Faker implements IXposedHookZygoteInit, IXposedHookLoadPackage {
     private double mLatitude, mLongitude;
     private int[] mWhateverArray;
 
+    private boolean isModuleOn;
+
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
         mSharedPreferences = new XSharedPreferences(Faker.class.getPackage().getName(), "PokemonGoCoordinates");
@@ -47,13 +49,18 @@ public class Faker implements IXposedHookZygoteInit, IXposedHookLoadPackage {
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
                 mContext = (Context) param.args[0];
+                mSharedPreferences.reload();
+                isModuleOn = mSharedPreferences.getBoolean("moduleOn", false);
+//                XposedBridge.log("TAG isModuleOn = " + isModuleOn);
 //                XposedBridge.log("TAG " + mSharedPreferences.getFile().exists() + ":" + mSharedPreferences.getAll().size());
                 final Timer t = new Timer();
                 t.schedule(new TimerTask() {
                     public void run() {
-                        gotoPlace();
+                        if (mSharedPreferences.hasFileChanged()) {
+                            gotoPlace();
+                        }
                     }
-                }, 0, 500);
+                }, 0, 250);
             }
         });
 
@@ -65,7 +72,7 @@ public class Faker implements IXposedHookZygoteInit, IXposedHookLoadPackage {
                     mLocation = location;
                     mThisObject = param.thisObject;
                     mWhateverArray = (int[]) param.args[1];
-                    if (!mSharedPreferences.getBoolean("moduleOn", false)) {
+                    if (!isModuleOn) {
                         XposedHelpers.callMethod(mThisObject, "nativeLocationUpdate", mLocation, mWhateverArray, mContext);
                     }
                 }
@@ -90,7 +97,7 @@ public class Faker implements IXposedHookZygoteInit, IXposedHookLoadPackage {
         }
         mSharedPreferences.reload();
 
-        if (!mSharedPreferences.getBoolean("moduleOn", false)) {
+        if (!isModuleOn) {
 //            XposedBridge.log("TAG LORT!" + mSharedPreferences.getAll().size()+ ":" + mSharedPreferences.getString("latitude","420"));
             return;
         }
