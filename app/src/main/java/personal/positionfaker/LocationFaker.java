@@ -22,10 +22,13 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.text.InputType;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.appindexing.AppIndex;
@@ -68,6 +71,7 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
     private ImageButton coordinatesPosition;
     private ImageButton directionOrRoute;
     private ImageButton onOffButton;
+    private ImageButton speedButton;
 
     private boolean isRoute = false;
     private Polyline line;
@@ -89,6 +93,7 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
         coordinatesPosition = (ImageButton) findViewById(R.id.coordinatsLocation);
         directionOrRoute = (ImageButton) findViewById(R.id.route_direction);
         onOffButton = (ImageButton) findViewById(R.id.on_off_button);
+        speedButton = (ImageButton) findViewById(R.id.changeSpeed);
 
         mMockedLocationProvider = new MockedLocationProvider(this, mContext, providerName);
 
@@ -100,12 +105,17 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
 
         sharedPreferences = getSharedPreferences("PokemonGoCoordinates", MODE_WORLD_READABLE);
         editor = sharedPreferences.edit();
-        editor.clear();
-        editor.putBoolean("moduleOn", false);
-        editor.apply();
+//        editor.clear();
+        if (sharedPreferences.getAll().isEmpty()) {
+            editor.putBoolean("moduleOn", false);
+            editor.putInt("speed", 10);
+            editor.apply();
+        }
+
+        mMockedLocationProvider.setSpeed(sharedPreferences.getInt("speed", 10));
 
         File theSharedPrefsFile = new File("data/data/personal.positionfaker/shared_prefs/PokemonGoCoordinates.xml");
-        Log.i("TAG", ""+ theSharedPrefsFile.exists());
+//        Log.i("TAG", ""+ theSharedPrefsFile.exists());
         theSharedPrefsFile.setReadable(true, false);
     }
 
@@ -144,6 +154,14 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
             public void onClick(View v) {
                 setMyLocation(endPositionMarker.getPosition().latitude, endPositionMarker.getPosition().longitude);
                 updateMyLocation();
+                if (isRoute) {
+                    route.clear();
+                    line.setPoints(route);
+                    route.add(getMyLocation());
+                    isMoving = false;
+                    endPostionAtMap.setVisible(false);
+                    mMockedLocationProvider.stopTimer();
+                }
             }
         });
 
@@ -191,6 +209,61 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
             }
         });
 
+        speedButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(LocationFaker.this);
+                builder.setTitle("Change walkingspeed");
+                LinearLayout linearLayout = new LinearLayout(mContext);
+                linearLayout.setOrientation(LinearLayout.VERTICAL);
+                linearLayout.setPadding(10, 10, 10, 10);
+                final SeekBar speedBar = new SeekBar(mContext);
+                final TextView speedBarInfo = new TextView(mContext);
+
+                speedBar.setMax(10);
+                speedBar.setProgress(sharedPreferences.getInt("speed", 10));
+                speedBarInfo.setText("Speed: " + speedBar.getProgress() + "km/h");
+                speedBarInfo.setGravity(Gravity.CENTER_HORIZONTAL);
+
+                speedBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        try {
+                            speedBarInfo.setText("Speed: " + progress + "km/h");
+                        } catch (Exception e) {
+                            Toast.makeText(mContext, "Error", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                    }
+                });
+
+                linearLayout.addView(speedBar);
+                linearLayout.addView(speedBarInfo);
+                builder.setView(linearLayout);
+                builder.setPositiveButton("GO!", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        editor.putInt("speed", speedBar.getProgress());
+                        mMockedLocationProvider.setSpeed(speedBar.getProgress());
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                builder.show();
+            }
+        });
+
         directionOrRoute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -218,12 +291,10 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View v) {
                 boolean module_on = sharedPreferences.getBoolean("moduleOn", false);
-                Log.i("TAG", "OnOffClicked, module_on: " + module_on);
                 try {
                     boolean newBool = (!module_on);
                     editor.putBoolean("moduleOn", newBool);
                     editor.apply();
-                    Log.i("TAG", "Kommer vi hertil: " + sharedPreferences.getBoolean("moduleOn", false));
                     setOnOffButtonImage(!module_on);
                 } catch (Exception e) {
                     Toast.makeText(mContext, "Error", Toast.LENGTH_SHORT).show();
@@ -242,7 +313,6 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
     }
 
     public void setOnOffButtonImage(boolean moduleOn) {
-        Log.i("TAG", "setOnOffButtonImage: " + moduleOn);
         if (moduleOn) {
             onOffButton.setImageResource(R.drawable.on_icon);
         } else {
@@ -311,6 +381,14 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
         return false;
     }
 
+    public void goalReached() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                endPostionAtMap.setVisible(false);
+            }
+        });
+    }
 
     public void setMyLocation(double lat, double lon) {
         mLatitude = lat;

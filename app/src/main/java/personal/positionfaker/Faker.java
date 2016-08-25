@@ -40,14 +40,14 @@ public class Faker implements IXposedHookZygoteInit, IXposedHookLoadPackage {
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         if (!lpparam.packageName.equals("com.nianticlabs.pokemongo")) return;
-        XposedBridge.log("TAG Starting pokemon");
+//        XposedBridge.log("TAG Starting pokemon");
 
         findAndHookConstructor("com.nianticlabs.nia.location.NianticLocationManager", lpparam.classLoader, Context.class, long.class, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
                 mContext = (Context) param.args[0];
-                XposedBridge.log("TAG " + mSharedPreferences.getFile().exists() + ":" + mSharedPreferences.getAll().size());
+//                XposedBridge.log("TAG " + mSharedPreferences.getFile().exists() + ":" + mSharedPreferences.getAll().size());
                 final Timer t = new Timer();
                 t.schedule(new TimerTask() {
                     public void run() {
@@ -95,14 +95,14 @@ public class Faker implements IXposedHookZygoteInit, IXposedHookLoadPackage {
             return;
         }
 
-        XposedBridge.log("TAG " + mSharedPreferences.getAll().size() + " : " + mSharedPreferences.getFile().exists());
+//        XposedBridge.log("TAG " + mSharedPreferences.getAll().size() + " : " + mSharedPreferences.getFile().exists());
         if (mSharedPreferences.getAll().size() < 2) {
             return;
         }
 
         mLatitude = Double.parseDouble(mSharedPreferences.getString("latitude", "420"));
         mLongitude = Double.parseDouble(mSharedPreferences.getString("longtitude", "420"));
-        if (mLatitude == 420 || mLongitude == 420) {
+        if (mLatitude == 420 || mLongitude == 420 || (mLatitude == 0 && mLongitude == 0)) {
             return;
         }
         mLocation.setLatitude(mLatitude);

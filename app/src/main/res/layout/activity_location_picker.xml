@@ -6,12 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".LocationFaker">
 
-
     <ImageButton
         android:id="@+id/pokemonLocation"
         android:layout_width="38dp"
         android:layout_height="38dp"
-        android:layout_gravity="top|left"
+        android:layout_gravity="top|start"
         android:layout_margin="12dp"
         android:adjustViewBounds="true"
         android:background="@drawable/background_image"
@@ -53,7 +52,7 @@
             android:src="@drawable/direction" />
 
         <ImageButton
-            android:id="@+id/coordinatsLocation"
+            android:id="@+id/teleportLocation"
             android:layout_width="38dp"
             android:layout_height="38dp"
             android:layout_marginRight="5dp"
@@ -62,10 +61,22 @@
             android:clickable="true"
             android:padding="5dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/marker_on_map" />
+            android:src="@drawable/rocket_icon" />
 
         <ImageButton
-            android:id="@+id/teleportLocation"
+            android:id="@+id/changeSpeed"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_marginRight="5dp"
+            android:adjustViewBounds="true"
+            android:background="@drawable/background_image"
+            android:clickable="true"
+            android:padding="5dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/speedometer" />
+
+        <ImageButton
+            android:id="@+id/coordinatsLocation"
             android:layout_width="38dp"
             android:layout_height="38dp"
             android:adjustViewBounds="true"
@@ -73,7 +84,9 @@
             android:clickable="true"
             android:padding="5dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/rocket_icon" />
+            android:src="@drawable/marker_on_map" />
+
+
     </LinearLayout>
 
 </fragment>

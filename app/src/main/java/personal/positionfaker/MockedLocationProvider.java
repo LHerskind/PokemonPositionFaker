@@ -52,14 +52,32 @@ public class MockedLocationProvider {
 
     private double addLat;
     private double addLon;
+    private double steps;
+    private double distance;
+
+    public void setSpeed(int speed) {
+        double newSpeed = speed * factor;
+        double newSteps = distance / newSpeed;
+        addLat = addLat * steps / newSteps;
+        addLon = addLon * steps / newSteps;
+        this.steps = newSteps;
+        this.speed = newSpeed;
+    }
+
+    public void stopTimer() {
+        if (timer != null) {
+            timer.cancel();
+        }
+        this.isMoving = false;
+    }
 
     public void moveToLocation(double endLat, double endLon) {
         Location start = getLocation();
         goal = new Location(providerName);
         goal.setLatitude(endLat);
         goal.setLongitude(endLon);
-        Float distance = start.distanceTo(goal);
-        double steps = distance / speed;
+        distance = (double) start.distanceTo(goal);
+        steps = distance / speed;
         addLat = (endLat - start.getLatitude()) / steps;
         addLon = (endLon - start.getLongitude()) / steps;
         if (!isMoving) {
@@ -76,13 +94,6 @@ public class MockedLocationProvider {
 
     }
 
-    public void stopTimer() {
-        if (timer != null) {
-            timer.cancel();
-        }
-        this.isMoving = false;
-    }
-
     public void moveStep(double addLat, double addLon) {
         Float distance = goal.distanceTo(getLocation());
         if (distance <= speed) {
@@ -93,6 +104,7 @@ public class MockedLocationProvider {
                     stopTimer();
                 }
             } else {
+                locationFaker.goalReached();
                 isMoving = false;
                 stopTimer();
             }
