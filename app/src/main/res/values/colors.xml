@@ -3,6 +3,7 @@
     <color name="colorPrimary">#ff1c1c</color>
     <color name="colorPrimaryDark">#de1818</color>
     <color name="grey">#ECECEC</color>
-    <color name="darkText">#80242325</color>
+    <color name="darkText">#242325</color>
+    <color name="darkText_brighter">#80242325</color>
     <color name="transperantgrey">#B3FFFFFF</color>
 </resources>

@@ -6,17 +6,11 @@ package personal.positionfaker;
 
 import android.content.Context;
 import android.location.Location;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.util.Log;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -26,11 +20,12 @@ public class MockedLocationProvider {
     private Context mContext;
     private String providerName;
     private final int updateTime = 500;
-    private final double speed = 15*(updateTime)/3600;
-    private Thread t;
+    private final double speed = 15 * (updateTime) / 3600;
     private Location goal;
     private boolean isMoving;
     private LocationFaker locationFaker;
+
+    private Timer timer;
 
 
     private final Handler mHandler = new Handler() {
@@ -45,7 +40,7 @@ public class MockedLocationProvider {
         this.providerName = providerName;
     }
 
-    public Location getLocation(){
+    public Location getLocation() {
         LatLng position = locationFaker.getMyLocation();
         Location location = new Location(providerName);
         location.setLongitude(position.longitude);
@@ -55,42 +50,58 @@ public class MockedLocationProvider {
 
     private double addLat;
     private double addLon;
-    public void moveToLocation(double endLat, double endLon){
+
+    public void moveToLocation(double endLat, double endLon) {
         Location start = getLocation();
         goal = new Location(providerName);
         goal.setLatitude(endLat);
         goal.setLongitude(endLon);
         Float distance = start.distanceTo(goal);
-        double steps = distance/speed;
-        addLat = (endLat-start.getLatitude())/steps;
-        addLon = (endLon-start.getLongitude())/steps;
-        if(!isMoving){
+        double steps = distance / speed;
+        addLat = (endLat - start.getLatitude()) / steps;
+        addLon = (endLon - start.getLongitude()) / steps;
+        if (!isMoving) {
             isMoving = true;
-            final Timer t = new Timer();
-            t.schedule(new TimerTask() {
+            timer = new Timer();
+            timer.schedule(new TimerTask() {
                 public void run() {
-                        if(!isMoving){
-                            t.cancel();
-                        }
-                        moveStep(addLat,addLon);
+                    if (isMoving) {
+                        moveStep(addLat, addLon);
+                    }
                 }
             }, 0, updateTime);
         }
+
     }
 
-    public void moveStep(double addLat, double addLon){
+    public void stopTimer() {
+        if (timer != null) {
+            timer.cancel();
+        }
+        this.isMoving = false;
+    }
+
+    public void moveStep(double addLat, double addLon) {
         Float distance = goal.distanceTo(getLocation());
-        if( distance <= speed){
+        if (distance <= speed) {
             setLocation(goal.getLatitude(), goal.getLongitude());
-            isMoving = false;
+            if (locationFaker.getIsRoute()) {
+                if (locationFaker.sendMeToNextRoutePoint()) {
+                    isMoving = false;
+                    stopTimer();
+                }
+            } else {
+                isMoving = false;
+                stopTimer();
+            }
         } else {
-            setLocation(getLocation().getLatitude()+addLat, getLocation().getLongitude()+addLon);
+            setLocation(getLocation().getLatitude() + addLat, getLocation().getLongitude() + addLon);
         }
         mHandler.sendEmptyMessage(0);
     }
 
     public void setLocation(double lat, double lon) {
-        locationFaker.setMyLocation(lat,lon);
+        locationFaker.setMyLocation(lat, lon);
     }
 
 
