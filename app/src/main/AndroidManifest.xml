@@ -41,7 +41,8 @@
 
         <activity
             android:name=".LocationFaker"
-            android:label="@string/title_activity_location_picker"></activity>
+            android:label="@string/title_activity_location_picker"
+            android:screenOrientation="portrait" />
 
     </application>
 

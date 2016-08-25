@@ -47,7 +47,7 @@ public class Faker implements IXposedHookZygoteInit, IXposedHookLoadPackage {
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
                 mContext = (Context) param.args[0];
-                XposedBridge.log("TAG " + mSharedPreferences.getFile().getAbsolutePath());
+                XposedBridge.log("TAG " + mSharedPreferences.getFile().exists() + ":" + mSharedPreferences.getAll().size());
                 final Timer t = new Timer();
                 t.schedule(new TimerTask() {
                     public void run() {
@@ -65,31 +65,41 @@ public class Faker implements IXposedHookZygoteInit, IXposedHookLoadPackage {
                     mLocation = location;
                     mThisObject = param.thisObject;
                     mWhateverArray = (int[]) param.args[1];
-//                    gotoPlace();
+                    if (!mSharedPreferences.getBoolean("moduleOn", false)) {
+                        XposedHelpers.callMethod(mThisObject, "nativeLocationUpdate", mLocation, mWhateverArray, mContext);
+                    }
                 }
                 return null;
             }
         });
 
+        /*
         findAndHookMethod("com.nianticlabs.nia.location.NianticLocationManager", lpparam.classLoader, "gpsStatusUpdate", Location.class, int[].class, new XC_MethodReplacement() {
             @Override
             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
                 return null;
             }
-        });
+        });*/
     }
 
     private void gotoPlace() {
-        XposedBridge.log("TAG : GOTOPLACE");
+//        XposedBridge.log("TAG : GOTOPLACE");
+
         if (mLocation == null || mThisObject == null || mWhateverArray == null) {
             return;
         }
         mSharedPreferences.reload();
 
+        if (!mSharedPreferences.getBoolean("moduleOn", false)) {
+//            XposedBridge.log("TAG LORT!" + mSharedPreferences.getAll().size()+ ":" + mSharedPreferences.getString("latitude","420"));
+            return;
+        }
+
         XposedBridge.log("TAG " + mSharedPreferences.getAll().size() + " : " + mSharedPreferences.getFile().exists());
         if (mSharedPreferences.getAll().size() < 2) {
             return;
         }
+
         mLatitude = Double.parseDouble(mSharedPreferences.getString("latitude", "420"));
         mLongitude = Double.parseDouble(mSharedPreferences.getString("longtitude", "420"));
         if (mLatitude == 420 || mLongitude == 420) {

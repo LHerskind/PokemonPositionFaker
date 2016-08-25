@@ -26,6 +26,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.ConnectionResult;
@@ -42,6 +43,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class LocationFaker extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -65,6 +67,7 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
     private ImageButton teleportPosition;
     private ImageButton coordinatesPosition;
     private ImageButton directionOrRoute;
+    private ImageButton onOffButton;
 
     private boolean isRoute = false;
     private Polyline line;
@@ -85,6 +88,7 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
         teleportPosition = (ImageButton) findViewById(R.id.teleportLocation);
         coordinatesPosition = (ImageButton) findViewById(R.id.coordinatsLocation);
         directionOrRoute = (ImageButton) findViewById(R.id.route_direction);
+        onOffButton = (ImageButton) findViewById(R.id.on_off_button);
 
         mMockedLocationProvider = new MockedLocationProvider(this, mContext, providerName);
 
@@ -97,12 +101,12 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
         sharedPreferences = getSharedPreferences("PokemonGoCoordinates", MODE_WORLD_READABLE);
         editor = sharedPreferences.edit();
         editor.clear();
-        editor.putBoolean("test", true);
+        editor.putBoolean("moduleOn", false);
         editor.apply();
-        /*
+
         File theSharedPrefsFile = new File("data/data/personal.positionfaker/shared_prefs/PokemonGoCoordinates.xml");
         Log.i("TAG", ""+ theSharedPrefsFile.exists());
-        theSharedPrefsFile.setReadable(true, false);*/
+        theSharedPrefsFile.setReadable(true, false);
     }
 
     @Override
@@ -208,12 +212,42 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
             }
         });
 
+        setOnOffButtonImage(sharedPreferences.getBoolean("moduleOn", false));
+
+        onOffButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean module_on = sharedPreferences.getBoolean("moduleOn", false);
+                Log.i("TAG", "OnOffClicked, module_on: " + module_on);
+                try {
+                    boolean newBool = (!module_on);
+                    editor.putBoolean("moduleOn", newBool);
+                    editor.apply();
+                    Log.i("TAG", "Kommer vi hertil: " + sharedPreferences.getBoolean("moduleOn", false));
+                    setOnOffButtonImage(!module_on);
+                } catch (Exception e) {
+                    Toast.makeText(mContext, "Error", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+
+
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
                 setGoalLocation(latLng);
             }
         });
+    }
+
+    public void setOnOffButtonImage(boolean moduleOn) {
+        Log.i("TAG", "setOnOffButtonImage: " + moduleOn);
+        if (moduleOn) {
+            onOffButton.setImageResource(R.drawable.on_icon);
+        } else {
+            onOffButton.setImageResource(R.drawable.off_icon);
+        }
     }
 
     public void setGoalLocation(LatLng latLng) {
@@ -292,9 +326,11 @@ public class LocationFaker extends FragmentActivity implements OnMapReadyCallbac
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    route.remove(0);
-                    route.add(0, getMyLocation());
-                    line.setPoints(route);
+                    if (!route.isEmpty()) {
+                        route.remove(0);
+                        route.add(0, getMyLocation());
+                        line.setPoints(route);
+                    }
                 }
             });
         }
